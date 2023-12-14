@@ -57,9 +57,9 @@ impl pallet_preimage::Config for Runtime {
 	type WeightInfo = ();
 	type Currency = ();
 	type ManagerOrigin = EnsureRoot<u128>;
-	type BaseDeposit = ();
-	type ByteDeposit = ();
+   type Consideration = ();
 }
+
 
 parameter_types! {
 	pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) * BlockWeights::get().max_block;
