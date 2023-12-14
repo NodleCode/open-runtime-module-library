@@ -280,7 +280,11 @@ fn claim_works() {
 		// unlocked after claiming
 		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB)));
 		assert!(VestingSchedules::<Runtime>::contains_key(BOB));
-		assert_ok!(PalletBalances::transfer_allow_death(RuntimeOrigin::signed(BOB), ALICE, 10));
+		assert_ok!(PalletBalances::transfer_allow_death(
+			RuntimeOrigin::signed(BOB),
+			ALICE,
+			10
+		));
 		// more are still locked
 		assert!(PalletBalances::transfer_allow_death(RuntimeOrigin::signed(BOB), ALICE, 1).is_err());
 
@@ -288,7 +292,11 @@ fn claim_works() {
 		// claim more
 		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB)));
 		assert!(!VestingSchedules::<Runtime>::contains_key(BOB));
-		assert_ok!(PalletBalances::transfer_allow_death(RuntimeOrigin::signed(BOB), ALICE, 10));
+		assert_ok!(PalletBalances::transfer_allow_death(
+			RuntimeOrigin::signed(BOB),
+			ALICE,
+			10
+		));
 		// all used up
 		assert_eq!(PalletBalances::free_balance(BOB), 0);
 
@@ -359,7 +367,11 @@ fn update_vesting_schedules_works() {
 
 		MockBlockNumberProvider::set(21);
 		assert_ok!(Vesting::claim(RuntimeOrigin::signed(BOB)));
-		assert_ok!(PalletBalances::transfer_allow_death(RuntimeOrigin::signed(BOB), ALICE, 10));
+		assert_ok!(PalletBalances::transfer_allow_death(
+			RuntimeOrigin::signed(BOB),
+			ALICE,
+			10
+		));
 
 		// empty vesting schedules cleanup the storage and unlock the fund
 		assert!(VestingSchedules::<Runtime>::contains_key(BOB));
@@ -380,7 +392,11 @@ fn update_vesting_schedules_works() {
 #[test]
 fn update_vesting_schedules_fails_if_unexpected_existing_locks() {
 	ExtBuilder::build().execute_with(|| {
-		assert_ok!(PalletBalances::transfer_allow_death(RuntimeOrigin::signed(ALICE), BOB, 1));
+		assert_ok!(PalletBalances::transfer_allow_death(
+			RuntimeOrigin::signed(ALICE),
+			BOB,
+			1
+		));
 		PalletBalances::set_lock(*b"prelocks", &BOB, 0u64, WithdrawReasons::all());
 	});
 }

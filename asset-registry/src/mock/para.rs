@@ -20,6 +20,8 @@ use orml_traits::{
 use orml_xcm_support::{IsNativeConcrete, MultiCurrencyAdapter, MultiNativeAsset};
 use pallet_xcm::XcmPassthrough;
 use polkadot_parachain::primitives::Sibling;
+use polkadot_runtime_common::xcm_sender::NoPriceForMessageDelivery;
+
 use sp_core::H256;
 use sp_runtime::{
 	traits::{AccountIdConversion, Convert, IdentityLookup},
@@ -75,6 +77,7 @@ impl pallet_balances::Config for Runtime {
 	type FreezeIdentifier = [u8; 8];
 	type MaxHolds = ();
 	type MaxFreezes = ();
+	type RuntimeFreezeReason = ();
 }
 
 use orml_asset_registry::impls::ExistentialDeposits as AssetRegistryExistentialDeposits;
@@ -266,8 +269,9 @@ impl GetChannelInfo for ChannelInfo {
 	fn get_channel_status(_id: ParaId) -> ChannelStatus {
 		ChannelStatus::Ready(10, 10)
 	}
-	fn get_channel_max(_id: ParaId) -> Option<usize> {
-		Some(usize::max_value())
+
+	fn get_channel_info(_id: ParaId) -> Option<cumulus_primitives_core::ChannelInfo> {
+		todo!()
 	}
 }
 
@@ -280,7 +284,7 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
 	type ControllerOrigin = EnsureRoot<AccountId>;
 	type ControllerOriginConverter = XcmOriginToCallOrigin;
 	type WeightInfo = ();
-	type PriceForSiblingDelivery = ();
+	type PriceForSiblingDelivery = NoPriceForMessageDelivery<ParaId>;
 }
 
 impl cumulus_pallet_dmp_queue::Config for Runtime {

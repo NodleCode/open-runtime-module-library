@@ -7,6 +7,7 @@ use frame_support::{
 	weights::constants::WEIGHT_REF_TIME_PER_SECOND,
 };
 use frame_system::EnsureRoot;
+use polkadot_runtime_common::xcm_sender::NoPriceForMessageDelivery;
 use sp_core::H256;
 use sp_runtime::{
 	traits::{Convert, IdentityLookup},
@@ -73,6 +74,7 @@ impl pallet_balances::Config for Runtime {
 	type FreezeIdentifier = [u8; 8];
 	type MaxHolds = ();
 	type MaxFreezes = ();
+	type RuntimeFreezeReason = ();
 }
 
 parameter_type_with_key! {
@@ -178,8 +180,14 @@ impl GetChannelInfo for ChannelInfo {
 	fn get_channel_status(_id: ParaId) -> ChannelStatus {
 		ChannelStatus::Ready(10, 10)
 	}
-	fn get_channel_max(_id: ParaId) -> Option<usize> {
-		Some(usize::max_value())
+	fn get_channel_info(_id: ParaId) -> Option<cumulus_primitives_core::ChannelInfo> {
+		Some(cumulus_primitives_core::ChannelInfo {
+			max_capacity: u32::MAX,
+			max_total_size: u32::MAX,
+			max_message_size: u32::MAX,
+			msg_count: u32::MAX,
+			total_size: u32::MAX,
+		})
 	}
 }
 
@@ -192,7 +200,7 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
 	type ControllerOrigin = EnsureRoot<AccountId>;
 	type ControllerOriginConverter = XcmOriginToCallOrigin;
 	type WeightInfo = ();
-	type PriceForSiblingDelivery = ();
+	type PriceForSiblingDelivery = NoPriceForMessageDelivery<ParaId>;
 }
 
 impl cumulus_pallet_dmp_queue::Config for Runtime {

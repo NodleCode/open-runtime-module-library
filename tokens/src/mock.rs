@@ -5,7 +5,10 @@
 use super::*;
 use frame_support::{
 	construct_runtime, parameter_types,
-	traits::{ChangeMembers, ConstU32, ConstU64, ContainsLengthBound, Everything, SortedMembers},
+	traits::{
+		tokens::{Pay, PaymentStatus, UnityAssetBalanceConversion},
+		ChangeMembers, ConstU32, ConstU64, ContainsLengthBound, Everything, SortedMembers,
+	},
 	PalletId,
 };
 use orml_traits::parameter_type_with_key;
@@ -97,6 +100,32 @@ impl ContainsLengthBound for TenToFourteen {
 	}
 }
 
+pub struct TestPay;
+impl Pay for TestPay {
+	type Beneficiary = AccountId;
+	type Balance = u64;
+	type Id = u64;
+	type AssetKind = u32;
+	type Error = ();
+
+	fn pay(
+		who: &Self::Beneficiary,
+		asset_kind: Self::AssetKind,
+		amount: Self::Balance,
+	) -> Result<Self::Id, Self::Error> {
+		Err(())
+	}
+	fn check_payment(id: Self::Id) -> PaymentStatus {
+		PaymentStatus::Unknown
+	}
+	#[cfg(feature = "runtime-benchmarks")]
+	fn ensure_successful(_: &Self::Beneficiary, _: Self::AssetKind, _: Self::Balance) {}
+	#[cfg(feature = "runtime-benchmarks")]
+	fn ensure_concluded(id: Self::Id) {
+		set_status(id, PaymentStatus::Failure)
+	}
+}
+
 parameter_types! {
 	pub const ProposalBond: Permill = Permill::from_percent(5);
 	pub const ProposalBondMinimum: u64 = 1;
@@ -104,6 +133,7 @@ parameter_types! {
 	pub const SpendPeriod: u64 = 2;
 	pub const Burn: Permill = Permill::from_percent(50);
 	pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
+	pub const TreasuryAccount:AccountId = TREASURY_ACCOUNT;
 	pub const GetTokenId: CurrencyId = DOT;
 	pub const MaxApprovals: u32 = 100;
 }
@@ -126,6 +156,12 @@ impl pallet_treasury::Config for Runtime {
 	type WeightInfo = ();
 	type MaxApprovals = MaxApprovals;
 	type SpendOrigin = frame_support::traits::NeverEnsureOrigin<Balance>;
+	type AssetKind = u32;
+	type Beneficiary = Self::AccountId;
+	type BeneficiaryLookup = IdentityLookup<Self::AccountId>;
+	type Paymaster = TestPay;
+	type BalanceConverter = UnityAssetBalanceConversion;
+	type PayoutPeriod = ConstU64<0>;
 }
 
 thread_local! {

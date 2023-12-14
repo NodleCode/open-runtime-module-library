@@ -102,6 +102,10 @@ impl<T: Config, GetCurrencyId: Get<T::CurrencyId>> Imbalance<T::Balance> for Pos
 	fn peek(&self) -> T::Balance {
 		self.0
 	}
+
+	fn extract(&mut self, _amount: T::Balance) -> Self {
+		todo!()
+	}
 }
 
 impl<T: Config, GetCurrencyId: Get<T::CurrencyId>> TryDrop for NegativeImbalance<T, GetCurrencyId> {
@@ -156,6 +160,10 @@ impl<T: Config, GetCurrencyId: Get<T::CurrencyId>> Imbalance<T::Balance> for Neg
 	}
 	fn peek(&self) -> T::Balance {
 		self.0
+	}
+
+	fn extract(&mut self, _amount: T::Balance) -> Self {
+		todo!()
 	}
 }
 
