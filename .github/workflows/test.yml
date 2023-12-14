@@ -14,9 +14,9 @@ on:
     paths-ignore:
       - '**/README.md'
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+env:
+  toolchain: stable
+  target: wasm32-unknown-unknown
 
 jobs:
   build:
@@ -24,11 +24,16 @@ jobs:
     env:
       SCCACHE_CACHE_SIZE: "60G"
     steps:
-    - uses: actions/checkout@v3
-    - name: Install toolchain
-      uses: dtolnay/rust-toolchain@nightly
-    - name: Install Wasm toolchain
-      run: rustup target add wasm32-unknown-unknown
+    - uses: actions/checkout@v4
+    - name: Install protobuf-compiler
+      run: |
+        sudo apt-get install protobuf-compiler
+    - name: Install Rust stable
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+       toolchain: ${{ env.toolchain }}
+       components: rustfmt, clippy
+       target: ${{ env.target }}
     - name: Check format
       run: make dev-format-check
     - name: Install clippy
