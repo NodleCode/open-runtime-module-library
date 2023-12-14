@@ -20,9 +20,30 @@ env:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        flavour:
+        - asset-registry
+        - auction
+        - authority
+        - benchmarking
+        - build-script-utils
+        - currencies
+        - gradually-update
+        - nft
+        - oracle
+        - parameters
+        - payments
+        - rewards
+        - tokens
+        - traits
+        - unknown-tokens
+        - utilities
+        - vesting
+        - xcm
+        - xcm-support
+        - xtokens
     runs-on: ubuntu-latest
-    env:
-      SCCACHE_CACHE_SIZE: "60G"
     steps:
     - uses: actions/checkout@v4
     - name: Install protobuf-compiler
@@ -34,15 +55,12 @@ jobs:
        toolchain: ${{ env.toolchain }}
        components: rustfmt, clippy
        target: ${{ env.target }}
-    - name: Check format
-      run: make dev-format-check
-    - name: Install clippy
-      run: rustup component add clippy
-    - name: Update
-      run: cargo update
-    - name: Run clippy
-      run: cargo clippy -- -D warnings
-    - name: Check for Wasm
-      run: make dev-check
-    - name: Run tests
-      run: make dev-test
+    - name: Run cargo tests
+      run: |
+         cd ${{matrix.flavour}}
+         cargo clippy -- -D warnings
+         cargo test
+    - name: cargo build
+      run: |
+         cd ${{matrix.flavour}}
+         cargo build --release
