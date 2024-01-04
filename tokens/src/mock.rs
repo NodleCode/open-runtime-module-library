@@ -109,13 +109,13 @@ impl Pay for TestPay {
 	type Error = ();
 
 	fn pay(
-		who: &Self::Beneficiary,
-		asset_kind: Self::AssetKind,
-		amount: Self::Balance,
+		_who: &Self::Beneficiary,
+		_asset_kind: Self::AssetKind,
+		_amount: Self::Balance,
 	) -> Result<Self::Id, Self::Error> {
 		Err(())
 	}
-	fn check_payment(id: Self::Id) -> PaymentStatus {
+	fn check_payment(_id: Self::Id) -> PaymentStatus {
 		PaymentStatus::Unknown
 	}
 	#[cfg(feature = "runtime-benchmarks")]
