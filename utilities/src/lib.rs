@@ -38,6 +38,8 @@ pub fn simulate_execution<R>(f: impl FnOnce() -> Result<R, DispatchError>) -> Re
 }
 
 #[cfg(test)]
+#[allow(unused_imports,dead_code)]
+
 mod tests {
 	use super::*;
 	use frame_support::{assert_noop, assert_ok, construct_runtime, pallet_prelude::*, traits::Everything};
@@ -47,9 +49,9 @@ mod tests {
 	use sp_runtime::{DispatchError, DispatchResult};
 	use sp_std::result::Result;
 
-	#[allow(dead_code)]
 	#[frame_support::pallet]
 	pub mod module {
+
 		use super::*;
 
 		#[pallet::config]
