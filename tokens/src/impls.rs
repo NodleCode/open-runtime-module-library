@@ -14,6 +14,7 @@ where
 	TestKey: Contains<<B as fungibles::Inspect<AccountId>>::AssetId>,
 	A: fungible::Inspect<AccountId, Balance = <B as fungibles::Inspect<AccountId>>::Balance>,
 	B: fungibles::Inspect<AccountId>,
+	AccountId: core::cmp::Eq
 {
 	type AssetId = <B as fungibles::Inspect<AccountId>>::AssetId;
 	type Balance = <B as fungibles::Inspect<AccountId>>::Balance;
@@ -102,6 +103,7 @@ where
 	TestKey: Contains<<B as fungibles::Inspect<AccountId>>::AssetId>,
 	A: fungible::Mutate<AccountId, Balance = <B as fungibles::Inspect<AccountId>>::Balance>,
 	B: fungibles::Mutate<AccountId>,
+	AccountId: core::cmp::Eq
 {
 	fn mint_into(
 		asset: Self::AssetId,
@@ -149,6 +151,7 @@ where
 	TestKey: Contains<<B as fungibles::Inspect<AccountId>>::AssetId>,
 	A: fungible::Mutate<AccountId, Balance = <B as fungibles::Inspect<AccountId>>::Balance>,
 	B: fungibles::Mutate<AccountId>,
+	AccountId: core::cmp::Eq
 {
 	fn handle_dust(_dust: fungibles::Dust<AccountId, Self>) {
 		// FIXME: only way to access internals of Dust is into_credit, but T is
@@ -208,6 +211,7 @@ where
 	>,
 	B: BalanceT,
 	GetCurrencyId: Get<<T as fungibles::Inspect<AccountId>>::AssetId>,
+	AccountId: core::cmp::Eq
 {
 	type Balance = B;
 
@@ -280,6 +284,7 @@ where
 	>,
 	B: BalanceT,
 	GetCurrencyId: Get<<T as fungibles::Inspect<AccountId>>::AssetId>,
+	AccountId: core::cmp::Eq
 {
 	fn mint_into(dest: &AccountId, amount: Self::Balance) -> Result<Self::Balance, DispatchError> {
 		T::mint_into(
@@ -330,6 +335,7 @@ where
 	>,
 	B: BalanceT,
 	GetCurrencyId: Get<<T as fungibles::Inspect<AccountId>>::AssetId>,
+	AccountId: core::cmp::Eq
 {
 	fn handle_dust(_dust: fungible::Dust<AccountId, Self>) {
 		// FIXME: only way to access internals of Dust is into_credit, but T is
