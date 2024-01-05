@@ -1,4 +1,4 @@
-use super::{AllowTopLevelPaidExecution, Amount, Balance, CurrencyId, CurrencyIdConvert, ParachainXcmRouter, relay::MessageQueue};
+use super::{AllowTopLevelPaidExecution, Amount, Balance, CurrencyId, CurrencyIdConvert, ParachainXcmRouter, relay::MessageQueue, para::RelayOrigin};
 use crate as orml_xtokens;
 
 use frame_support::{

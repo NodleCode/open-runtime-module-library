@@ -1,9 +1,10 @@
+use super::relay::MessageQueue;
 use super::{Amount, Balance, CurrencyId, CurrencyIdConvert, ParachainXcmRouter};
 
 use crate as orml_asset_registry;
 
 use codec::{Decode, Encode, MaxEncodedLen};
-use cumulus_primitives_core::{ChannelStatus, GetChannelInfo, ParaId};
+use cumulus_primitives_core::{ChannelStatus, GetChannelInfo, ParaId, AggregateMessageOrigin};
 use frame_support::traits::{EnsureOrigin, EnsureOriginWithArg};
 use frame_support::{
 	construct_runtime, match_types, ord_parameter_types, parameter_types,
@@ -277,20 +278,25 @@ impl GetChannelInfo for ChannelInfo {
 
 impl cumulus_pallet_xcmp_queue::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type XcmExecutor = XcmExecutor<XcmConfig>;
 	type ChannelInfo = ChannelInfo;
 	type VersionWrapper = ();
-	type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
 	type ControllerOrigin = EnsureRoot<AccountId>;
 	type ControllerOriginConverter = XcmOriginToCallOrigin;
 	type WeightInfo = ();
 	type PriceForSiblingDelivery = NoPriceForMessageDelivery<ParaId>;
+	type XcmpQueue = ();
+	type MaxInboundSuspended = sp_core::ConstU32<1_000>;
+}
+
+// use polkadot_runtime_parachains::inclusion::AggregateMessageOrigin;
+parameter_types! {
+    pub const RelayOrigin: AggregateMessageOrigin = AggregateMessageOrigin::Parent;
 }
 
 impl cumulus_pallet_dmp_queue::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type XcmExecutor = XcmExecutor<XcmConfig>;
-	type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
+	type DmpSink = frame_support::traits::EnqueueWithOrigin<MessageQueue, RelayOrigin>;
+	type WeightInfo = ();
 }
 
 impl cumulus_pallet_xcm::Config for Runtime {
