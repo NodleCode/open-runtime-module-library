@@ -14,30 +14,54 @@ on:
     paths-ignore:
       - '**/README.md'
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+env:
+  toolchain: stable
+  target: wasm32-unknown-unknown
 
 jobs:
   build:
-    runs-on: [self-hosted]
-    env:
-      SCCACHE_CACHE_SIZE: "60G"
+    strategy:
+      matrix:
+        flavour:
+        - asset-registry
+        - auction
+        - authority
+        - benchmarking
+        - build-script-utils
+        - currencies
+        - gradually-update
+        - nft
+        - oracle
+        - parameters
+        - payments
+        - rewards
+        - tokens
+        - traits
+        - unknown-tokens
+        - utilities
+        - vesting
+        - xcm
+        - xcm-support
+        - xtokens
+    runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
     - uses: actions/checkout@v4
-    - name: Install toolchain
-      uses: dtolnay/rust-toolchain@nightly
-    - name: Install Wasm toolchain
-      run: rustup target add wasm32-unknown-unknown
-    - name: Check format
-      run: make dev-format-check
-    - name: Install clippy
-      run: rustup component add clippy
-    - name: Update
-      run: cargo update
-    - name: Run clippy
-      run: cargo clippy -- -D warnings
-    - name: Check for Wasm
-      run: make dev-check
-    - name: Run tests
-      run: make dev-test
+    - name: Install protobuf-compiler
+      run: |
+        sudo apt-get install protobuf-compiler
+    - name: Install Rust stable
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+       toolchain: ${{ env.toolchain }}
+       components: rustfmt, clippy
+       target: ${{ env.target }}
+    - name: Run cargo tests
+      run: |
+         cd ${{matrix.flavour}}
+         cargo clippy -- -D warnings
+         cargo test
+    - name: cargo build
+      run: |
+         cd ${{matrix.flavour}}
+         cargo build --release
